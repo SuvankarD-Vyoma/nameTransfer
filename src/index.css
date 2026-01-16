@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Charis+SIL:ital,wght@0,400;0,700;1,400&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* Requested Palette */
+  --wb-dark: rgb(16, 54, 71);       /* Deepest Teal */
+  --wb-primary: rgb(29, 84, 109); /* Medium Dark */
+  --wb-secondary: rgb(95, 149, 152); /* Medium */
+  --wb-accent: rgb(243, 244, 244);  /* Lightest */
+
+  /* Typography */
+  --font-heading: 'Charis SIL', serif;
+  --font-body: 'Charis SIL', serif;
+}
+
+@layer utilities {
+  /* Font Utilities */
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+  .font-body {
+    font-family: var(--font-body);
+  }
+
+  /* Glassmorphism Utility */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  /* Custom Selection Color */
+  ::selection {
+    background-color: var(--wb-accent);
+    color: var(--wb-dark);
+  }
+}
