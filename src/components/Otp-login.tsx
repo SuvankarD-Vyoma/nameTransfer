@@ -1,13 +1,12 @@
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { ArrowLeft, Phone, ShieldCheck, ArrowRight, Loader2 } from "lucide-react"
+import { useAuth } from "../context/AuthContext" // Import the useAuth hook
 
-interface OTPLoginProps {
-    onLogin: (phone: string) => void
-}
-
-export default function OTPLogin({ onLogin }: OTPLoginProps) {
+export default function OTPLogin() {
     const navigate = useNavigate()
+    const { login } = useAuth() // Access the login function from Context
+    
     const [phone, setPhone] = useState("")
     const [otp, setOtp] = useState("")
     const [step, setStep] = useState<"phone" | "otp">("phone")
@@ -29,8 +28,14 @@ export default function OTPLogin({ onLogin }: OTPLoginProps) {
         e.preventDefault()
         if (otp.length === 6) {
             setIsLoading(true)
+            // Simulate API Verification
             setTimeout(() => {
-                onLogin(phone)
+                setIsLoading(false)
+                login(phone) // Update global auth state via Context
+                
+                // Note: The PublicRoute in App.tsx will automatically 
+                // redirect to /workflow because isAuthenticated is now true.
+                // But a manual navigate is fine as a fallback.
                 navigate("/workflow")
             }, 800)
         }

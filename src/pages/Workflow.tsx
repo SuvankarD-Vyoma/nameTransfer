@@ -1,6 +1,9 @@
+// pages/Workflow.tsx
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import StepIndicator from "../components/StepIndicator"
+
+// Step Components
 import VehicleRegistration from "../components/steps/vehicle-registration"
 import OTPVerification from "../components/steps/otp-verification"
 import VehicleDetails from "../components/steps/vehicle-details"
@@ -8,7 +11,15 @@ import NameTransfer from "../components/steps/name-transfer"
 import BuyerVerification from "../components/steps/buyer-verification"
 import TransferRequest from "../components/steps/transfer-request"
 import TransferStatus from "../components/steps/transfer-status"
-import { useWorkflow } from "../context/WorkflowContext"
+import Navbar from "../components/Navbar"
+import { ArrowRight } from "lucide-react"
+
+// Shared Interfaces
+export interface BuyerDetails {
+    name: string
+    aadhaar: string
+    address: string
+}
 
 const STEPS = [
     "Vehicle Registration",
@@ -25,11 +36,21 @@ interface WorkflowPageProps {
     onLogout: () => void
 }
 
-export default function WorkflowPage({ userPhone, onLogout }: WorkflowPageProps) {
+export default function WorkflowPage({ onLogout }: WorkflowPageProps) {
     const navigate = useNavigate()
-    const { resetWorkflow } = useWorkflow()
-    const [currentStep, setCurrentStep] = useState(0)
 
+    // --- WORKFLOW STATE (Formerly in Context) ---
+    const [currentStep, setCurrentStep] = useState(0)
+    const [vehicleRegNo, setVehicleRegNo] = useState("")
+    const [ownerEmail, setOwnerEmail] = useState("")
+    const [buyerDetails, setBuyerDetails] = useState<BuyerDetails>({
+        name: "",
+        aadhaar: "",
+        address: "",
+    })
+    const [transferRequestId, setTransferRequestId] = useState("")
+
+    // Logic Functions
     const handleNext = () => {
         if (currentStep < STEPS.length - 1) {
             setCurrentStep(currentStep + 1)
@@ -42,35 +63,80 @@ export default function WorkflowPage({ userPhone, onLogout }: WorkflowPageProps)
         }
     }
 
-    const handleLogout = () => {
-        resetWorkflow()
+    const handleStartOver = () => {
+        setVehicleRegNo("")
+        setOwnerEmail("")
+        setBuyerDetails({ name: "", aadhaar: "", address: "" })
+        setTransferRequestId("")
         setCurrentStep(0)
-        onLogout()
+    }
+
+    const handleLogoutAction = () => {
+        handleStartOver() // Reset state
+        onLogout()        // Clear auth
         navigate("/")
     }
 
-    const handleStartOver = () => {
-        resetWorkflow()
-        setCurrentStep(0)
-    }
-
-    // Render the current step component
+    // --- RENDER STEPS WITH PROP DRILLING ---
     const renderStep = () => {
         switch (currentStep) {
             case 0:
-                return <VehicleRegistration onNext={handleNext} />
+                return (
+                    <VehicleRegistration
+                        onNext={handleNext}
+                        vehicleRegNo={vehicleRegNo}
+                        setVehicleRegNo={setVehicleRegNo}
+                    />
+                )
             case 1:
-                return <OTPVerification onNext={handleNext} />
+                return (
+                    <OTPVerification
+                        onNext={handleNext}
+                        ownerEmail={ownerEmail}
+                        setOwnerEmail={setOwnerEmail}
+                    />
+                )
             case 2:
-                return <VehicleDetails onNext={handleNext} />
+                return (
+                    <VehicleDetails
+                        onNext={handleNext}
+                        vehicleRegNo={vehicleRegNo}
+                    />
+                )
             case 3:
-                return <NameTransfer onNext={handleNext} />
+                return (
+                    <NameTransfer
+                        onNext={(buyer) => {
+                            setBuyerDetails(buyer)
+                            handleNext()
+                        }}
+                    />
+                )
             case 4:
-                return <BuyerVerification onNext={handleNext} />
+                return (
+                    <BuyerVerification
+                        onNext={handleNext}
+                        buyerDetails={buyerDetails}
+                        setBuyerDetails={setBuyerDetails}
+                    />
+                )
             case 5:
-                return <TransferRequest onNext={handleNext} />
+                return (
+                    <TransferRequest
+                        onNext={(id) => {
+                            setTransferRequestId(id)
+                            handleNext()
+                        }}
+                        vehicleRegNo={vehicleRegNo}
+                        buyerDetails={buyerDetails}
+                    />
+                )
             case 6:
-                return <TransferStatus />
+                return (
+                    <TransferStatus
+                        transferRequestId={transferRequestId}
+                    />
+                )
             default:
                 return null
         }
@@ -79,34 +145,22 @@ export default function WorkflowPage({ userPhone, onLogout }: WorkflowPageProps)
     const isLastStep = currentStep === STEPS.length - 1
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-            <div className="max-w-4xl mx-auto px-4 py-8">
-                {/* Header */}
-                <div className="flex justify-between items-start mb-8">
-                    <div>
-                        <h1 className="text-3xl font-bold text-slate-900 mb-2">
-                            Vehicle Ownership Transfer
-                        </h1>
-                        <p className="text-slate-600">
-                            Complete the ownership transfer process for your vehicle
-                        </p>
-                        <p className="text-sm text-slate-500 mt-2">
-                            Logged in as: <span className="font-medium text-slate-700">+91 {userPhone}</span>
-                        </p>
-                    </div>
-                    <button
-                        onClick={handleLogout}
-                        className="px-4 py-2 text-sm border border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-slate-50 transition-colors"
-                    >
-                        Logout
-                    </button>
-                </div>
+        <main className="min-h-screen bg-[#fafaf9] text-stone-800 font-body selection:bg-[var(--wb-accent)] selection:text-[var(--wb-dark)] relative overflow-hidden">
+
+            {/* Abstract Background Decoration */}
+            <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-[var(--wb-accent)] rounded-full blur-3xl opacity-20 translate-x-1/3 -translate-y-1/4 pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-[40vw] h-[40vw] bg-[var(--wb-dark)] rounded-full blur-3xl opacity-5 -translate-x-1/4 translate-y-1/4 pointer-events-none"></div>
+
+            <Navbar /> {/* Consistent navigation */}
+
+            <div className="max-w-4xl mx-auto px-6 py-10 relative z-10">
 
                 {/* Step Indicator */}
                 <StepIndicator steps={STEPS} currentStep={currentStep} />
 
-                {/* Step Content */}
-                <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
+                {/* Step Content Card */}
+                {/* Updated to match the 'Glass/Paper' aesthetic of previous components */}
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl shadow-[var(--wb-dark)]/5 border border-stone-200 px-8 pt-7 pb-3 mb-5 min-h-[400px] animate-in slide-in-from-bottom-2 duration-500">
                     {renderStep()}
                 </div>
 
@@ -116,30 +170,32 @@ export default function WorkflowPage({ userPhone, onLogout }: WorkflowPageProps)
                         <button
                             onClick={handlePrev}
                             disabled={currentStep === 0}
-                            className="px-6 py-2 border border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="px-8 py-3 border border-stone-300 rounded-lg text-stone-600 font-bold hover:bg-stone-50 hover:text-[var(--wb-dark)] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                         >
                             Previous
                         </button>
                         <button
                             onClick={handleNext}
-                            className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                            className="px-8 py-3 bg-[var(--wb-primary)] text-white rounded-lg font-bold hover:bg-[var(--wb-dark)] transition-all shadow-lg shadow-[var(--wb-dark)]/10 flex items-center gap-2 group"
                         >
-                            Next
+                            Next Step
+                            {/* Assuming ArrowRight is imported from lucide-react */}
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </button>
                     </div>
                 )}
 
                 {isLastStep && (
-                    <div className="flex justify-center gap-4">
+                    <div className="flex justify-center gap-6">
                         <button
                             onClick={handleStartOver}
-                            className="px-8 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+                            className="px-8 py-3 bg-[var(--wb-secondary)] text-white rounded-lg font-bold hover:bg-[var(--wb-primary)] transition-colors shadow-md flex items-center gap-2"
                         >
-                            Start Over
+                            Start New Application
                         </button>
                         <button
-                            onClick={handleLogout}
-                            className="px-8 py-3 border border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-slate-50 transition-colors"
+                            onClick={handleLogoutAction}
+                            className="px-8 py-3 border border-stone-300 rounded-lg text-stone-600 font-bold hover:bg-stone-50 hover:border-red-200 hover:text-red-600 transition-colors"
                         >
                             Logout
                         </button>

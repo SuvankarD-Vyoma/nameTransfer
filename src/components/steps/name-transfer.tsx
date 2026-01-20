@@ -1,4 +1,3 @@
-
 import type React from "react"
 
 import { useState } from "react"
@@ -10,11 +9,10 @@ interface BuyerDetailsForm {
 }
 
 interface NameTransferProps {
-    ownerEmail: string
     onNext: (buyer: BuyerDetailsForm) => void
 }
 
-export default function NameTransfer({ ownerEmail, onNext }: NameTransferProps) {
+export default function NameTransfer({ onNext }: NameTransferProps) {
     const [buyer, setBuyer] = useState<BuyerDetailsForm>({
         name: "",
         aadhaar: "",
@@ -51,7 +49,7 @@ export default function NameTransfer({ ownerEmail, onNext }: NameTransferProps) 
                         </div>
                         <div>
                             <p className="text-sm text-slate-600">Email</p>
-                            <p className="font-semibold text-slate-900">{ownerEmail}</p>
+                            <p className="font-semibold text-slate-900">rajesh.kumar@email.com</p>
                         </div>
                         <div>
                             <p className="text-sm text-slate-600">Aadhaar (Masked)</p>
@@ -129,10 +127,11 @@ export default function NameTransfer({ ownerEmail, onNext }: NameTransferProps) 
                 </div>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex gap-4 mb-6">
                 <input
                     type="checkbox"
                     id="agree"
+                    required
                     className="w-4 h-4 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500"
                 />
                 <label htmlFor="agree" className="text-sm text-slate-700">
@@ -142,7 +141,7 @@ export default function NameTransfer({ ownerEmail, onNext }: NameTransferProps) 
 
             <button
                 type="submit"
-                className="w-full mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
             >
                 Generate Agreement & Sign
             </button>

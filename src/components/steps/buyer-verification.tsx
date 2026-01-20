@@ -8,10 +8,11 @@ interface BuyerDetailsType {
 
 interface BuyerVerificationProps {
     buyerDetails: BuyerDetailsType
+    setBuyerDetails: (details: BuyerDetailsType) => void
     onNext: () => void
 }
 
-export default function BuyerVerification({ buyerDetails, onNext }: BuyerVerificationProps) {
+export default function BuyerVerification({ buyerDetails, setBuyerDetails, onNext }: BuyerVerificationProps) {
     const [verified, setVerified] = useState(false)
 
     return (
@@ -34,15 +35,17 @@ export default function BuyerVerification({ buyerDetails, onNext }: BuyerVerific
                 <div className="bg-slate-50 p-6 rounded-lg space-y-3">
                     <div>
                         <p className="text-sm text-slate-600">Name</p>
-                        <p className="font-semibold text-slate-900">{buyerDetails.name}</p>
+                        <p className="font-semibold text-slate-900">{buyerDetails.name || "Not provided"}</p>
                     </div>
                     <div>
                         <p className="text-sm text-slate-600">Aadhaar (Masked)</p>
-                        <p className="font-semibold text-slate-900">XXXX-XXXX-{buyerDetails.aadhaar.slice(-4)}</p>
+                        <p className="font-semibold text-slate-900">
+                            {buyerDetails.aadhaar ? `XXXX-XXXX-${buyerDetails.aadhaar.slice(-4)}` : "Not provided"}
+                        </p>
                     </div>
                     <div>
                         <p className="text-sm text-slate-600">Address</p>
-                        <p className="font-semibold text-slate-900">{buyerDetails.address}</p>
+                        <p className="font-semibold text-slate-900">{buyerDetails.address || "Not provided"}</p>
                     </div>
                 </div>
             </div>

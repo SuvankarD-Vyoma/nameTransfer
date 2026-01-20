@@ -2,11 +2,23 @@
 @import "tailwindcss";
 
 :root {
-  /* Requested Palette */
-  --wb-dark: rgb(16, 54, 71);       /* Deepest Teal */
-  --wb-primary: rgb(29, 84, 109); /* Medium Dark */
-  --wb-secondary: rgb(95, 149, 152); /* Medium */
-  --wb-accent: rgb(243, 244, 244);  /* Lightest */
+  /* Core Brand Colors */
+  --wb-dark: rgb(16, 54, 71);       /* Deepest Teal - headers, text */
+  --wb-primary: rgb(29, 84, 109);   /* Medium Dark - primary actions */
+  --wb-secondary: rgb(95, 149, 152); /* Medium - secondary elements */
+  --wb-accent: rgb(243, 244, 244);  /* Lightest - backgrounds */
+
+  /* Vibrant Accent Colors for UI Elements */
+  --wb-gold: rgb(218, 165, 32);     /* Rich Gold - CTAs, highlights, badges */
+  --wb-amber: rgb(255, 179, 0);     /* Bright Amber - notifications, emphasis */
+  --wb-green: rgb(34, 139, 34);     /* Forest Green - confirmations, success */
+  --wb-emerald: rgb(16, 185, 129);  /* Emerald - informational elements */
+  --wb-indigo: rgb(67, 97, 238);    /* Indigo Blue - links, interactive elements */
+  
+  /* Supporting Colors */
+  --wb-cream: rgb(255, 251, 235);   /* Soft cream - card backgrounds */
+  --wb-slate: rgb(71, 85, 105);     /* Cool slate - secondary text */
+  --wb-burgundy: rgb(136, 19, 55);  /* Deep burgundy - important alerts */
 
   /* Typography */
   --font-heading: 'Charis SIL', serif;
@@ -33,5 +45,18 @@
   ::selection {
     background-color: var(--wb-accent);
     color: var(--wb-dark);
+  }
+}
+
+@layer utilities {
+  /* Negative Z-Index Utilities */
+  .-z-10 {
+    z-index: -10;
+  }
+  .-z-20 {
+    z-index: -20;
+  }
+  .z-10 {
+    z-index: 10;
   }
 }

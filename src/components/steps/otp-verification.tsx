@@ -1,20 +1,20 @@
-
 import type React from "react"
 
 import { useState } from "react"
 
 interface OTPVerificationProps {
-  onNext: (email: string) => void
+  onNext: () => void
+  ownerEmail: string
+  setOwnerEmail: (email: string) => void
 }
 
-export default function OTPVerification({ onNext }: OTPVerificationProps) {
+export default function OTPVerification({ onNext, ownerEmail, setOwnerEmail }: OTPVerificationProps) {
   const [otp, setOtp] = useState("")
-  const [email, setEmail] = useState("rajesh.kumar@email.com")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (otp.length === 6) {
-      onNext(email)
+      onNext()
     }
   }
 
@@ -50,8 +50,8 @@ export default function OTPVerification({ onNext }: OTPVerificationProps) {
           <label className="block text-sm font-medium text-slate-700 mb-2">Owner Email</label>
           <input
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={ownerEmail}
+            onChange={(e) => setOwnerEmail(e.target.value)}
             className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
           />
         </div>

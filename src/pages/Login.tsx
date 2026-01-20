@@ -24,7 +24,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
         if (otp.length === 6) {
             // Here you would verify OTP with your API
             onLogin(phone)
-            navigate("/workflow")
+            navigate("/dashboard")
         }
     }
 

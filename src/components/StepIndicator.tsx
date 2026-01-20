@@ -1,42 +1,69 @@
+import { Check } from "lucide-react"
+
 interface StepIndicatorProps {
     steps: string[]
     currentStep: number
 }
 
 export default function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
+    const progressWidth = Math.min((currentStep / (steps.length - 1)) * 100, 100) + "%"
+
     return (
-        <div className="mb-12">
-            <div className="flex items-center justify-between gap-4">
-                {steps.map((step, index) => (
-                    <div key={index} className="flex-1 flex flex-col items-center relative">
-                        <div
-                            className={`w-14 h-14 rounded-2xl flex items-center justify-center font-bold text-lg mb-3 transition-all duration-300 shadow-lg ${index <= currentStep
-                                    ? "bg-gradient-to-br from-slate-700 to-slate-800 text-white shadow-slate-700/20"
-                                    : "bg-slate-100 text-slate-400 border-2 border-slate-200"
-                                }`}
-                        >
-                            {index + 1}
-                        </div>
-                        <span
-                            className={`text-sm text-center font-semibold leading-tight max-w-24 ${index <= currentStep ? "text-slate-900" : "text-slate-500"
-                                }`}
-                        >
-                            {step}
-                        </span>
-                        {index < steps.length - 1 && (
+        <div className="mb-8 w-full px-2">
+            {/* Main Container for Track and Steps */}
+            <div className="relative flex items-center justify-between min-h-8">
+
+                {/* 1. Background Line (Gray) - The empty track */}
+                <div
+                    className="absolute left-0 top-1/2 w-full h-1 rounded-full bg-stone-200 -translate-y-1/2 z-0"
+                />
+
+                {/* 2. Active Line (Teal) - The filling animation */}
+                <div
+                    className="absolute left-0 top-1/2 h-1 rounded-full transition-all duration-700 ease-in-out bg-teal-600 -translate-y-1/2 z-10"
+                    style={{ width: progressWidth }}
+                />
+
+                {/* Steps */}
+                {steps.map((step, index) => {
+                    const isCompleted = index < currentStep
+                    const isCurrent = index === currentStep
+
+                    return (
+                        <div key={index} className="flex flex-col items-center relative z-20">
+                            {/* Step Circle */}
                             <div
-                                className={`absolute top-7 left-full w-full h-1 transition-all duration-300 ${index < currentStep ? "bg-gradient-to-r from-slate-700 to-slate-400" : "bg-slate-200"
+                                className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold border-2 transition-all duration-300 ${isCompleted
+                                    ? 'bg-slate-700 border-slate-700 text-white'
+                                    : isCurrent
+                                        ? 'bg-white border-slate-900 text-slate-900 scale-110'
+                                        : 'bg-white border-stone-200 text-stone-400'
                                     }`}
-                                style={{
-                                    width: `calc(100% - 2rem)`,
-                                    marginLeft: '1rem',
-                                    marginRight: '1rem'
-                                }}
-                            />
-                        )}
-                    </div>
-                ))}
+                            >
+                                {isCompleted ? (
+                                    <Check className="w-4 h-4" />
+                                ) : (
+                                    <span>{index + 1}</span>
+                                )}
+                            </div>
+
+                            {/* Step Label */}
+                            <span
+                                className={`absolute text-[10px] uppercase tracking-wider font-bold w-24 text-center transition-colors duration-300 ${isCurrent || isCompleted
+                                    ? 'text-slate-900 opacity-100'
+                                    : 'text-stone-400 opacity-60'
+                                    }`}
+                                style={{ top: '40px' }}
+                            >
+                                {step}
+                            </span>
+                        </div>
+                    )
+                })}
             </div>
+
+            {/* Spacing for labels */}
+            <div className="h-6" />
         </div>
     )
 }
