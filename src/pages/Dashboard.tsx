@@ -1,89 +1,132 @@
-import React from "react"
+import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { CarFront, Tag, ArrowRight, ShieldCheck } from "lucide-react"
+import { CarFront, Tag, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react"
 import Navbar from "../components/Navbar"
 
 export default function Dashboard() {
     const navigate = useNavigate()
+    const [selectedRole, setSelectedRole] = useState(null)
+
+    const handleContinue = () => {
+        if (selectedRole === 'buyer') {
+            navigate("/workflow")
+        } else if (selectedRole === 'seller') {
+            alert("Seller flow is currently under maintenance. Please check back later.")
+        }
+    }
 
     return (
-        <div className="min-h-screen bg-[#fafaf9] text-stone-800 font-body selection:bg-[var(--wb-accent)] selection:text-[var(--wb-dark)] relative overflow-hidden flex flex-col">
+        // CHANGED: replaced 'overflow-hidden' with 'overflow-x-hidden'
+        // This ensures the background blobs don't cause a horizontal scrollbar, 
+        // but the user can still scroll down if the screen is short.
+        <div className="min-h-screen bg-[#fafaf9] text-stone-800 font-body relative flex flex-col selection:bg-[var(--wb-gold)] selection:text-[var(--wb-dark)]">
 
-            {/* Abstract Background Decoration */}
-            <div className="absolute top-0 left-0 w-[50vw] h-[50vw] bg-[var(--wb-secondary)] rounded-full blur-3xl opacity-10 -translate-x-1/4 -translate-y-1/4 pointer-events-none"></div>
-            <div className="absolute bottom-0 right-0 w-[40vw] h-[40vw] bg-[var(--wb-dark)] rounded-full blur-3xl opacity-5 translate-x-1/4 translate-y-1/4 pointer-events-none"></div>
+            {/* --- Background Elements --- */}
+            <div className="fixed inset-0 z-0 opacity-40 pointer-events-none bg-dot-pattern "></div>
 
+            {/* Top Left: Secondary/Blue Shape */}
+            <div className="fixed  top-0 left-0 w-[50vw] h-[50vw] bg-[var(--wb-secondary)]/10 rounded-full blur-3xl -translate-x-1/4 -translate-y-1/4 pointer-events-none"></div>
 
-            <Navbar /> 
+            {/* Bottom Right: Dark Shape */}
+            <div className="fixed bottom-0 right-0 w-[40vw] h-[40vw] bg-[var(--wb-dark)]/5 rounded-full blur-3xl translate-x-1/4 translate-y-1/4 pointer-events-none"></div>
+
+            <Navbar />
+
             {/* Main Content */}
-            <main className="flex-1 flex items-center justify-center p-6 relative z-10">
+            <main className="flex-1 flex flex-col items-center justify-center p-6 relative z-10">
                 <div className="max-w-4xl w-full">
 
-                    <div className="text-center mb-16 animate-in slide-in-from-bottom-4 duration-700">
-                        <h1 className="text-3xl md:text-4xl font-heading font-bold text-[var(--wb-dark)] mb-2">
-                            Select Your Role
+                    <div className="text-center mb-12 animate-in slide-in-from-bottom-4 duration-700 fade-in">
+                        <h1 className="text-3xl md:text-5xl font-heading font-bold text-[var(--wb-dark)] mb-4">
+                            What is your role?
                         </h1>
-
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-8">
+                    <div className="grid md:grid-cols-2 gap-6 mb-10">
 
-                        {/* Seller Card (Shows Nothing/No Action) */}
+                        {/* --- Seller Card --- */}
                         <button
-                            className="group relative text-left h-full"
-                            onClick={() => { /* No action as requested */ }}
+                            onClick={() => setSelectedRole('seller')}
+                            className={`group relative text-left h-full p-8 rounded-3xl border-2 transition-all duration-300 flex flex-col justify-between
+                                ${selectedRole === 'seller'
+                                    ? 'bg-[var(--wb-primary)]/5 border-[var(--wb-primary)] shadow-[0_8px_30px_rgba(29,84,109,0.15)] transform -translate-y-1'
+                                    : 'bg-white border-stone-100 hover:border-stone-300 hover:shadow-lg hover:-translate-y-1'
+                                }`}
                         >
-                            <div className="absolute inset-0 bg-white rounded-2xl shadow-sm border border-stone-200 transition-all duration-300 group-hover:shadow-xl group-hover:border-[var(--wb-secondary)] group-hover:-translate-y-1"></div>
-                            <div className="relative p-10 h-full flex flex-col justify-between">
-                                <div>
-                                    <div className="w-16 h-16 rounded-2xl bg-stone-50 border border-stone-100 flex items-center justify-center mb-8 group-hover:bg-[var(--wb-accent)]/10 group-hover:border-[var(--wb-accent)]/20 transition-colors">
-                                        <Tag className="w-8 h-8 text-stone-400 group-hover:text-[var(--wb-dark)] transition-colors" />
-                                    </div>
-                                    <h2 className="text-2xl font-bold font-heading text-stone-700 group-hover:text-[var(--wb-dark)] mb-3 transition-colors">
-                                        I am a Seller
-                                    </h2>
-                                    <p className="text-stone-500 leading-relaxed">
-                                        I want to transfer ownership of my vehicle to another person.
-                                    </p>
+                            <div className={`absolute top-6 right-6 transition-all duration-300 ${selectedRole === 'seller' ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}>
+                                <CheckCircle2 className="w-8 h-8 text-[var(--wb-primary)] fill-white" />
+                            </div>
+
+                            <div className="mb-6">
+                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-colors duration-300
+                                    ${selectedRole === 'seller' ? 'bg-[var(--wb-primary)] text-white shadow-md' : 'bg-stone-100 text-stone-400 group-hover:bg-stone-200 group-hover:text-stone-600'}`}>
+                                    <Tag className="w-8 h-8" />
                                 </div>
-                                <div className="mt-8 flex items-center text-sm font-bold text-stone-400 uppercase tracking-wider group-hover:text-[var(--wb-primary)] transition-colors">
-                                    <span>Select Role</span>
-                                    <ArrowRight className="w-4 h-4 ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
-                                </div>
+                                <h2 className="text-2xl font-bold font-heading text-[var(--wb-dark)] mb-2">
+                                    I am a Seller
+                                </h2>
+                                <p className="text-stone-500 font-medium leading-relaxed">
+                                    Initiate a transfer of ownership for your registered vehicle.
+                                </p>
                             </div>
                         </button>
 
-                        {/* Buyer Card (Navigates to Workflow) */}
+                        {/* --- Buyer Card --- */}
                         <button
-                            className="group relative text-left h-full"
-                            onClick={() => navigate("/workflow")}
+                            onClick={() => setSelectedRole('buyer')}
+                            className={`group relative text-left h-full p-8 rounded-3xl border-2 transition-all duration-300 flex flex-col justify-between
+                                ${selectedRole === 'buyer'
+                                    ? 'bg-[var(--wb-primary)]/5 border-[var(--wb-primary)] shadow-[0_8px_30px_rgba(29,84,109,0.15)] transform -translate-y-1'
+                                    : 'bg-white border-stone-100 hover:border-stone-300 hover:shadow-lg hover:-translate-y-1'
+                                }`}
                         >
-                            <div className="absolute inset-0 bg-white rounded-2xl shadow-md border border-stone-200 transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-[var(--wb-dark)]/10 group-hover:border-[var(--wb-primary)] group-hover:-translate-y-1"></div>
-                            <div className="relative p-10 h-full flex flex-col justify-between">
-                                <div>
-                                    <div className="w-16 h-16 rounded-2xl bg-[var(--wb-primary)]/10 border border-[var(--wb-primary)]/20 flex items-center justify-center mb-8 group-hover:bg-[var(--wb-primary)] group-hover:border-[var(--wb-primary)] transition-all duration-300">
-                                        <CarFront className="w-8 h-8 text-[var(--wb-primary)] group-hover:text-white transition-colors" />
-                                    </div>
-                                    <h2 className="text-2xl font-bold font-heading text-[var(--wb-dark)] mb-3">
-                                        I am a Buyer
-                                    </h2>
-                                    <p className="text-stone-600 leading-relaxed">
-                                        I am purchasing a vehicle and need to accept the transfer request.
-                                    </p>
+                            <div className={`absolute top-6 right-6 transition-all duration-300 ${selectedRole === 'buyer' ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}>
+                                <CheckCircle2 className="w-8 h-8 text-[var(--wb-primary)] fill-white" />
+                            </div>
+
+                            <div className="mb-6">
+                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-colors duration-300
+                                    ${selectedRole === 'buyer' ? 'bg-[var(--wb-primary)] text-white shadow-md' : 'bg-stone-100 text-stone-400 group-hover:bg-stone-200 group-hover:text-stone-600'}`}>
+                                    <CarFront className="w-8 h-8" />
                                 </div>
-                                <div className="mt-8 flex items-center text-sm font-bold text-[var(--wb-primary)] uppercase tracking-wider group-hover:text-[var(--wb-dark)] transition-colors">
-                                    <span>Proceed to Transfer</span>
-                                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                                </div>
+                                <h2 className="text-2xl font-bold font-heading text-[var(--wb-dark)] mb-2">
+                                    I am a Buyer
+                                </h2>
+                                <p className="text-stone-500 font-medium leading-relaxed">
+                                    Accept a pending transfer request using vehicle details.
+                                </p>
                             </div>
                         </button>
 
                     </div>
 
-                    <div className="mt-16 text-center">
-                        <p className="text-xs text-stone-400 font-medium">
-                            Need help choosing? <a href="#" className="underline hover:text-[var(--wb-dark)]">Read the guidelines</a>
-                        </p>
+                    {/* --- Action Bar --- */}
+                    <div className="flex flex-col items-center gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100">
+                        <button
+                            onClick={handleContinue}
+                            disabled={!selectedRole}
+                            className={`
+                                relative overflow-hidden px-10 py-4 rounded-xl font-bold text-lg flex items-center gap-3 transition-all duration-300
+                                ${selectedRole
+                                    ? 'bg-[var(--wb-primary)] text-white shadow-[4px_4px_0px_0px_rgba(29,84,109,0.3)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none border-2 border-[var(--wb-primary)] cursor-pointer'
+                                    : 'bg-stone-200 text-stone-400 border-2 border-stone-200 cursor-not-allowed'
+                                }
+                            `}
+                        >
+                            Continue
+                            <ArrowRight className={`w-5 h-5 transition-transform duration-300 ${selectedRole ? 'group-hover:translate-x-1' : ''}`} />
+                        </button>
+
+                        {!selectedRole && (
+                            <p className="text-xs text-stone-400 font-medium animate-pulse">
+                                Please select an option to proceed
+                            </p>
+                        )}
+                        {selectedRole === 'seller' && (
+                            <p className="text-xs text-[var(--wb-gold)] font-bold flex items-center gap-1">
+                                <AlertCircle className="w-3 h-3" /> Note: Seller services are currently limited.
+                            </p>
+                        )}
                     </div>
 
                 </div>

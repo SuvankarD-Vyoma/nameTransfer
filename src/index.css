@@ -34,6 +34,10 @@
     font-family: var(--font-body);
   }
 
+  body {
+  overflow-x: hidden;
+  }
+
   /* Glassmorphism Utility */
   .glass-card {
     background: rgba(255, 255, 255, 0.7);
@@ -45,6 +49,38 @@
   ::selection {
     background-color: var(--wb-accent);
     color: var(--wb-dark);
+  }
+
+
+    /* Animation Keyframes */
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-30px); }
+  }
+  @keyframes float-medium {
+    0%, 100% { transform: translateY(0px) translateX(0px); }
+    50% { transform: translateY(-20px) translateX(15px); }
+  }
+  @keyframes pulse-gentle {
+    0%, 100% { transform: scale(1); opacity: 0.05; }
+    50% { transform: scale(1.05); opacity: 0.08; }
+  }
+
+  /* Animation Utilities */
+  .animate-float-slow {
+    animation: float-slow 8s ease-in-out infinite;
+  }
+  .animate-float-medium {
+    animation: float-medium 6s ease-in-out infinite;
+  }
+  .animate-pulse-gentle {
+    animation: pulse-gentle 10s ease-in-out infinite;
+  }
+
+  /* Background Pattern Utility */
+  .bg-dot-pattern {
+    background-image: radial-gradient(var(--wb-secondary) 1px, transparent 1px);
+    background-size: 24px 24px;
   }
 }
 
