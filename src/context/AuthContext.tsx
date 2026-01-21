@@ -29,10 +29,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Check for existing token on mount
     useEffect(() => {
         const existingToken = cookieUtils.getToken()
-        if (existingToken) {
-            setToken(existingToken)
-            setIsAuthenticated(true)
-            // Note: You may want to validate the token here or fetch user data
+        const existingUserData = cookieUtils.getUserData()
+
+        if (existingToken && existingUserData) {
+            try {
+                const parsedUserData = JSON.parse(decodeURIComponent(existingUserData))
+                setToken(existingToken)
+                setUserData(parsedUserData)
+                setUserPhone(parsedUserData.user_contact_number)
+                setIsAuthenticated(true)
+            } catch (error) {
+                console.error('Failed to restore user session:', error)
+                // Clear invalid data
+                cookieUtils.removeToken()
+                cookieUtils.removeUserData()
+            }
         }
     }, [])
 
@@ -42,8 +53,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setToken(token)
         setIsAuthenticated(true)
 
-        // Store token in cookie
+        // Store both token and user data in cookies
         cookieUtils.setToken(token, expiresAt)
+        cookieUtils.setUserData(encodeURIComponent(JSON.stringify(userData)))
     }
 
     const logout = () => {
@@ -52,8 +64,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUserData(null)
         setToken(null)
 
-        // Remove token from cookie
+        // Remove both from cookies
         cookieUtils.removeToken()
+        cookieUtils.removeUserData()
     }
 
     return (

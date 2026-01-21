@@ -34,6 +34,17 @@ export interface GenerateTokenResponse {
   };
 }
 
+
+
+export interface FetchVehicleDetailsResponse {
+  version: string;
+  status: number;
+  message: string;
+  data: {
+    p_otp: number;
+  };
+}
+
 export const authService = {
   // Generate OTP
   async generateOTP(mobileNumber: string): Promise<GenerateOTPResponse> {
@@ -95,4 +106,34 @@ export const authService = {
 
     return response.json();
   },
+
+
+
+
+  async fetchVehicleDetails(
+  vehicleNumber: string,
+  userName: string,
+  userId: number,
+  token: string
+): Promise<FetchVehicleDetailsResponse> {
+  const response = await fetch(`${API_BASE_URL}/user/fetchVehicleDetails`, {
+    method: 'POST',
+    headers: {
+      'accept': '*/*',
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      vehicle_number: vehicleNumber,
+      user_name: userName,
+      user_id: userId,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch vehicle details');
+  }
+
+  return response.json();
+}
 };

@@ -1,6 +1,8 @@
 import type React from "react"
 import { useState } from "react"
 import { CarFront, Search, ArrowRight, Info, AlertCircle } from "lucide-react"
+import { useAuth } from "../../context/AuthContext"
+import { authService } from "../../api/authapi/AuthService"
 
 interface VehicleRegistrationProps {
     onNext: () => void
@@ -10,18 +12,44 @@ interface VehicleRegistrationProps {
 
 export default function VehicleRegistration({ onNext, vehicleRegNo, setVehicleRegNo }: VehicleRegistrationProps) {
     const [error, setError] = useState("")
+    const { userPhone, userData, token } = useAuth()
+    const [isLoading, setIsLoading] = useState(false)
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        // Basic regex for Indian Vehicle Numbers (flexible)
-        const regex = /^[A-Z]{2}[0-9]{1,2}[A-Z]{1,3}[0-9]{4}$/
 
-        // Allow user to proceed if it looks roughly correct, but you can enforce regex if needed
-        if (vehicleRegNo.trim().length > 5) {
-            setError("")
-            onNext()
-        } else {
+        if (vehicleRegNo.trim().length <= 5) {
             setError("Please enter a valid format (e.g., WB01AB1234)")
+            return
+        }
+
+        if (!userData || !token) {
+            setError("Authentication required. Please log in again.")
+            return
+        }
+
+        setError("")
+        setIsLoading(true)
+
+        try {
+            const response = await authService.fetchVehicleDetails(
+                vehicleRegNo,
+                userPhone,
+                userData.user_id,
+                token
+            )
+
+            if (response.status === 0) {
+                // Success - proceed to next step
+                onNext()
+            } else {
+                setError(response.message || "Failed to fetch vehicle details")
+            }
+        } catch (err) {
+            setError("Unable to fetch vehicle details. Please try again.")
+            console.error("Vehicle fetch error:", err)
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -95,10 +123,17 @@ export default function VehicleRegistration({ onNext, vehicleRegNo, setVehicleRe
             {/* Action Button */}
             <button
                 type="submit"
-                className="w-full mt-8 px-6 py-4 bg-[var(--wb-primary)] text-white rounded-lg font-bold hover:bg-[var(--wb-dark)] transition-all shadow-lg shadow-[var(--wb-dark)]/10 flex items-center justify-center gap-2 group transform active:scale-[0.99]"
+                disabled={isLoading}
+                className="w-full mt-8 px-6 py-4 bg-[var(--wb-primary)] text-white rounded-lg font-bold hover:bg-[var(--wb-dark)] transition-all shadow-lg shadow-[var(--wb-dark)]/10 flex items-center justify-center gap-2 group transform active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                Fetch Vehicle Details
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                {isLoading ? (
+                    <>Processing...</>
+                ) : (
+                    <>
+                        Fetch Vehicle Details
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </>
+                )}
             </button>
         </form>
     )

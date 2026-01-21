@@ -8,10 +8,10 @@ export default function Dashboard() {
     const [selectedRole, setSelectedRole] = useState(null)
 
     const handleContinue = () => {
-        if (selectedRole === 'buyer') {
+        if (selectedRole === 'seller') {
             navigate("/workflow")
-        } else if (selectedRole === 'seller') {
-            alert("Seller flow is currently under maintenance. Please check back later.")
+        } else if (selectedRole === 'buyer') {
+            alert("Buyer flow is currently under maintenance. Please check back later.")
         }
     }
 
@@ -122,9 +122,9 @@ export default function Dashboard() {
                                 Please select an option to proceed
                             </p>
                         )}
-                        {selectedRole === 'seller' && (
+                        {selectedRole === 'buyer' && (
                             <p className="text-xs text-[var(--wb-gold)] font-bold flex items-center gap-1">
-                                <AlertCircle className="w-3 h-3" /> Note: Seller services are currently limited.
+                                <AlertCircle className="w-3 h-3" /> Note: Buyer services are currently limited.
                             </p>
                         )}
                     </div>
