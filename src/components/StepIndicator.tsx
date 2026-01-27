@@ -6,6 +6,7 @@ interface StepIndicatorProps {
 }
 
 export default function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
+    const adjustedStep = currentStep - 1
     const progressWidth = Math.min((currentStep / (steps.length - 1)) * 100, 100) + "%"
 
     return (

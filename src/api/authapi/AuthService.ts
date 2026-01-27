@@ -135,5 +135,31 @@ export const authService = {
   }
 
   return response.json();
+},
+
+
+async validateVehicleOTP(
+    contactNumber: string,
+    vehicleNumber: string,
+    otp: string,
+    token: string
+) {
+    const response = await fetch(
+        `${API_BASE_URL}/user/validateOTPByRegistedPhoneNumber`,
+        {
+            method: 'POST',
+            headers: {
+                'accept': '*/*',
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                contact_number: contactNumber,
+                vehicle_number: vehicleNumber,
+                otp: parseInt(otp)
+            })
+        }
+    )
+    return response.json()
 }
 };

@@ -15,6 +15,7 @@ import {
 interface BuyerDetailsForm {
     name: string
     aadhaar: string
+    mobile: string
     address: string
 }
 
@@ -26,6 +27,7 @@ export default function NameTransfer({ onNext }: NameTransferProps) {
     const [buyer, setBuyer] = useState<BuyerDetailsForm>({
         name: "",
         aadhaar: "",
+        mobile: "",
         address: "",
     })
 
@@ -147,6 +149,31 @@ export default function NameTransfer({ onNext }: NameTransferProps) {
                                 }
                                 placeholder="12-digit UIDAI Number"
                                 maxLength={12}
+                                className="w-full pl-12 pr-4 py-3.5 bg-white border border-stone-200 rounded-lg text-[var(--wb-dark)] placeholder:text-stone-300 focus:outline-none focus:border-[var(--wb-primary)] focus:ring-4 focus:ring-[var(--wb-primary)]/10 transition-all font-mono font-bold tracking-wide"
+                                required
+                            />
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="block text-xs font-bold text-stone-600 uppercase tracking-wider ml-1">
+                            Buyer Mobile Number
+                        </label>
+                        <div className="relative group">
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-300 group-focus-within:text-[var(--wb-primary)] transition-colors">
+                                <Lock className="w-5 h-5" />
+                            </div>
+                            <input
+                                type="text"
+                                name="mobile"
+                                value={buyer.mobile}
+                                onChange={(e) =>
+                                    setBuyer((prev) => ({
+                                        ...prev,
+                                        mobile: e.target.value.replace(/\D/g, "").slice(0, 10),
+                                    }))
+                                }
+                                placeholder="10-digit Mobile Number"
+                                maxLength={10}
                                 className="w-full pl-12 pr-4 py-3.5 bg-white border border-stone-200 rounded-lg text-[var(--wb-dark)] placeholder:text-stone-300 focus:outline-none focus:border-[var(--wb-primary)] focus:ring-4 focus:ring-[var(--wb-primary)]/10 transition-all font-mono font-bold tracking-wide"
                                 required
                             />

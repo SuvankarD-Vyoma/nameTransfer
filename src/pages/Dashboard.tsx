@@ -2,18 +2,26 @@ import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { CarFront, Tag, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react"
 import Navbar from "../components/Navbar"
+import { useAuth } from "../context/AuthContext"
 
 export default function Dashboard() {
     const navigate = useNavigate()
-    const [selectedRole, setSelectedRole] = useState(null)
+    const { selectedRole: savedRole, setRole } = useAuth()
+    const [selectedRole, setSelectedRole] = useState<'seller' | 'buyer' | null>(null)  // CHANGE: Always start with null
+
 
     const handleContinue = () => {
         if (selectedRole === 'seller') {
+            setRole('seller')  // Save role to context
             navigate("/workflow")
         } else if (selectedRole === 'buyer') {
+            setRole('buyer')  // ADD THIS LINE - save buyer role
             alert("Buyer flow is currently under maintenance. Please check back later.")
         }
     }
+
+    console.log("Saved Role from Context:", savedRole)
+    console.log("Currently Selected Role:", selectedRole)
 
     return (
         // CHANGED: replaced 'overflow-hidden' with 'overflow-x-hidden'

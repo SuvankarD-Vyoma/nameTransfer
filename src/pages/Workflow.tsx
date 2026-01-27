@@ -2,9 +2,10 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import StepIndicator from "../components/StepIndicator"
+import { useAuth } from "../context/AuthContext"
 
 // Step Components
-import VehicleRegistration from "../components/steps/vehicle-registration"
+import VehicleRegistration from "../components/steps/vehicle-registration-otp"
 import OTPVerification from "../components/steps/otp-verification"
 import VehicleDetails from "../components/steps/vehicle-details"
 import NameTransfer from "../components/steps/name-transfer"
@@ -13,6 +14,7 @@ import TransferRequest from "../components/steps/transfer-request"
 import TransferStatus from "../components/steps/transfer-status"
 import Navbar from "../components/Navbar"
 import { ArrowRight } from "lucide-react"
+import VehicleRegistrationOTP from "../components/steps/vehicle-registration-otp"
 
 // Shared Interfaces
 export interface BuyerDetails {
@@ -22,8 +24,7 @@ export interface BuyerDetails {
 }
 
 const STEPS = [
-    "Vehicle Registration",
-    "OTP Verification",
+    "Vehicle Registration & OTP",
     "Vehicle & Challan Details",
     "Name Transfer",
     "Buyer Verification",
@@ -31,16 +32,12 @@ const STEPS = [
     "Status Tracking",
 ]
 
-interface WorkflowPageProps {
-    userPhone: string
-    onLogout: () => void
-}
-
-export default function WorkflowPage({ onLogout }: WorkflowPageProps) {
+export default function WorkflowPage() {
     const navigate = useNavigate()
+    const { logout } = useAuth()
 
     // --- WORKFLOW STATE (Formerly in Context) ---
-    const [currentStep, setCurrentStep] = useState(0)
+    const [currentStep, setCurrentStep] = useState(1)
     const [vehicleRegNo, setVehicleRegNo] = useState("")
     const [ownerEmail, setOwnerEmail] = useState("")
     const [buyerDetails, setBuyerDetails] = useState<BuyerDetails>({
@@ -58,7 +55,7 @@ export default function WorkflowPage({ onLogout }: WorkflowPageProps) {
     }
 
     const handlePrev = () => {
-        if (currentStep > 0) {
+        if (currentStep > 1) {
             setCurrentStep(currentStep - 1)
         }
     }
@@ -68,30 +65,24 @@ export default function WorkflowPage({ onLogout }: WorkflowPageProps) {
         setOwnerEmail("")
         setBuyerDetails({ name: "", aadhaar: "", address: "" })
         setTransferRequestId("")
-        setCurrentStep(0)
+        setCurrentStep(1)
     }
 
     const handleLogoutAction = () => {
         handleStartOver() // Reset state
-        onLogout()        // Clear auth
+        logout()          // Clear auth
         navigate("/")
     }
 
     // --- RENDER STEPS WITH PROP DRILLING ---
     const renderStep = () => {
         switch (currentStep) {
-            case 0:
+            case 1:
                 return (
-                    <VehicleRegistration
+                    <VehicleRegistrationOTP
                         onNext={handleNext}
                         vehicleRegNo={vehicleRegNo}
                         setVehicleRegNo={setVehicleRegNo}
-                    />
-                )
-            case 1:
-                return (
-                    <OTPVerification
-                        onNext={handleNext}
                         ownerEmail={ownerEmail}
                         setOwnerEmail={setOwnerEmail}
                     />
@@ -156,7 +147,7 @@ export default function WorkflowPage({ onLogout }: WorkflowPageProps) {
             <div className="max-w-4xl mx-auto px-6 py-10 relative z-10">
 
                 {/* Step Indicator */}
-                <StepIndicator steps={STEPS} currentStep={currentStep} />
+                <StepIndicator steps={STEPS} currentStep={currentStep - 1} />
 
                 {/* Step Content Card */}
                 {/* Updated to match the 'Glass/Paper' aesthetic of previous components */}
@@ -169,7 +160,7 @@ export default function WorkflowPage({ onLogout }: WorkflowPageProps) {
                     <div className="flex justify-between gap-4">
                         <button
                             onClick={handlePrev}
-                            disabled={currentStep === 0}
+                            disabled={currentStep === 1}
                             className="px-8 py-3 border border-stone-300 rounded-lg text-stone-600 font-bold hover:bg-stone-50 hover:text-[var(--wb-dark)] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                         >
                             Previous

@@ -14,6 +14,9 @@ interface AuthContextType {
     userPhone: string
     userData: UserData | null
     token: string | null
+    selectedRole: 'seller' | 'buyer' | null
+    loading: boolean; // <--- ADD THIS
+    setRole: (role: 'seller' | 'buyer') => void
     login: (phone: string, userData: UserData, token: string, expiresAt: string) => void
     logout: () => void
 }
@@ -25,26 +28,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [userPhone, setUserPhone] = useState("")
     const [userData, setUserData] = useState<UserData | null>(null)
     const [token, setToken] = useState<string | null>(null)
+    const [selectedRole, setSelectedRole] = useState<'seller' | 'buyer' | null>(null)
 
-    // Check for existing token on mount
+    // ADD THIS LOADING STATE
+    const [loading, setLoading] = useState(true)
+
     useEffect(() => {
-        const existingToken = cookieUtils.getToken()
-        const existingUserData = cookieUtils.getUserData()
-
-        if (existingToken && existingUserData) {
+        const checkSession = () => {
             try {
-                const parsedUserData = JSON.parse(decodeURIComponent(existingUserData))
-                setToken(existingToken)
-                setUserData(parsedUserData)
-                setUserPhone(parsedUserData.user_contact_number)
-                setIsAuthenticated(true)
+                const existingToken = cookieUtils.getToken()
+                const existingUserData = cookieUtils.getUserData()
+                const existingRole = localStorage.getItem('userRole') as 'seller' | 'buyer' | null
+
+                if (existingToken && existingUserData) {
+                    const parsedUserData = JSON.parse(decodeURIComponent(existingUserData))
+                    setToken(existingToken)
+                    setUserData(parsedUserData)
+                    setUserPhone(parsedUserData.user_contact_number)
+                    setIsAuthenticated(true)
+                    setSelectedRole(existingRole)
+                }
             } catch (error) {
                 console.error('Failed to restore user session:', error)
-                // Clear invalid data
                 cookieUtils.removeToken()
                 cookieUtils.removeUserData()
+                localStorage.removeItem('userRole')
+            } finally {
+                // IMPORTANT: Stop loading whether session was found or not
+                setLoading(false)
             }
         }
+
+        checkSession()
     }, [])
 
     const login = (phone: string, userData: UserData, token: string, expiresAt: string) => {
@@ -52,8 +67,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUserData(userData)
         setToken(token)
         setIsAuthenticated(true)
-
-        // Store both token and user data in cookies
         cookieUtils.setToken(token, expiresAt)
         cookieUtils.setUserData(encodeURIComponent(JSON.stringify(userData)))
     }
@@ -63,20 +76,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUserPhone("")
         setUserData(null)
         setToken(null)
-
-        // Remove both from cookies
+        setSelectedRole(null)
         cookieUtils.removeToken()
         cookieUtils.removeUserData()
+        localStorage.removeItem('userRole')
+    }
+
+    const setRole = (role: 'seller' | 'buyer') => {
+        setSelectedRole(role)
+        localStorage.setItem('userRole', role)
     }
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, userPhone, userData, token, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, userPhone, userData, token, selectedRole, loading, setRole, login, logout }}>
             {children}
         </AuthContext.Provider>
     )
 }
 
-// Custom hook for easy access
 export function useAuth() {
     const context = useContext(AuthContext)
     if (context === undefined) {

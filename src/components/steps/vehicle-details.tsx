@@ -37,7 +37,7 @@ export default function VehicleDetails({ vehicleRegNo, onNext }: VehicleDetailsP
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
                     <span className="px-3 py-1 rounded-full bg-[var(--wb-gold)]/10 border border-[var(--wb-gold)]/20 text-[var(--wb-gold)] text-xs font-bold tracking-wider uppercase">
-                        Step 03
+                        Step 02
                     </span>
                     <span className="h-px flex-1 bg-stone-200"></span>
                 </div>
